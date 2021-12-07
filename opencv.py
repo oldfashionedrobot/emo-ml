@@ -6,26 +6,6 @@ from PIL import Image, ImageDraw
 import glob
 import random
 
-
-# fill in with random emotion detections if none are found by the API
-# pass in all the detected likelihoods as a set, sets will remove any duplicate values
-def randomize_emotions(unique_detected: set = {}):
-    print(unique_detected)
-
-    if(len(unique_detected) == 1):
-        value = unique_detected.pop()
-        if(value == "UNKNOWN" or value == "VERY_UNLIKELY"):
-            print("random")
-            return True
-
-    elif(len(unique_detected) == 0):
-        print("no detected")
-        return True
-
-    else:
-        return False
-
-
 def detect_face(face_file, max_results=4):
     """Uses the Vision API to detect faces in the given file.
 
@@ -73,29 +53,29 @@ def highlight_faces(image, faces, output_filename):
         print('surprise: {}'.format(surprise_likelihood))
         print('sorow: {}'.format(sorrow_likelihood))
 
-        should_randomize = randomize_emotions({
-            anger_likelihood,
-            joy_likelihood,
-            surprise_likelihood,
-            sorrow_likelihood
-        })
+        # should_randomize = randomize_emotions({
+        #     anger_likelihood,
+        #     joy_likelihood,
+        #     surprise_likelihood,
+        #     sorrow_likelihood
+        # })
 
-        if(should_randomize is True):
-            random_num = random.randrange(0, 4)
-            if(random_num == 0):
-                anger_likelihood = "VERY_LIKELY"
-            elif(random_num == 1):
-                joy_likelihood = "VERY_LIKELY"
-            elif(random_num == 2):
-                surprise_likelihood = "VERY_LIKELY"
-            elif(random_num == 3):
-                sorrow_likelihood = "VERY_LIKELY"
+        # if(should_randomize is True):
+        #     random_num = random.randrange(0, 4)
+        #     if(random_num == 0):
+        #         anger_likelihood = "VERY_LIKELY"
+        #     elif(random_num == 1):
+        #         joy_likelihood = "VERY_LIKELY"
+        #     elif(random_num == 2):
+        #         surprise_likelihood = "VERY_LIKELY"
+        #     elif(random_num == 3):
+        #         sorrow_likelihood = "VERY_LIKELY"
 
-        print("AFTER RANDOM CHECK")
-        print('anger: {}'.format(anger_likelihood))
-        print('joy: {}'.format(joy_likelihood))
-        print('surprise: {}'.format(surprise_likelihood))
-        print('sorow: {}'.format(sorrow_likelihood))
+        # print("AFTER RANDOM CHECK")
+        # print('anger: {}'.format(anger_likelihood))
+        # print('joy: {}'.format(joy_likelihood))
+        # print('surprise: {}'.format(surprise_likelihood))
+        # print('sorow: {}'.format(sorrow_likelihood))
 
         box = [(vertex.x, vertex.y)
                for vertex in face.bounding_poly.vertices]
@@ -160,8 +140,6 @@ while True:
 
 # Release the video capture object
 cap.release()
-# Close all active windows
-cv2.destroyAllWindows()
 
 # Loads the image into memory
 with io.open(FILE_NAME, 'rb') as image_file:
@@ -173,3 +151,19 @@ with io.open(FILE_NAME, 'rb') as image_file:
     # Reset the file pointer, so we can read the file again
     image_file.seek(0)
     highlight_faces(image_file, faces, 'OUT_' + FILE_NAME)
+
+
+img = cv2.imread('OUT_' + FILE_NAME)
+# Loop until you hit the Esc key
+while True:
+    # Display the image
+    cv2.imshow('Webcam', img)
+
+    # Detect if the Esc key has been pressed
+    c = cv2.waitKey(1)
+    if c == 27:
+        # Close all active windows
+        cv2.destroyAllWindows()
+
+        # break out of the while loop
+        break
